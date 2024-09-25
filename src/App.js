@@ -1,17 +1,27 @@
 import { Fragment } from "react";
-import Header from "./components/Header";
-import Banner from "./components/Banner";
-import MovieLayout from "./components/MovieLayout";
+import { Route, Routes } from "react-router-dom";
+
 import "swiper/scss";
+import Main from "./components/layout/Main";
+import HomePage from "./pages/HomePage";
+import Banner from "./components/Banner";
 
 function App() {
   return (
     <Fragment>
-      <Header />
-      <Banner />
-      <MovieLayout title="Now playing" type={"now_playing"} />
-      <MovieLayout title="Top rated" type={"top_rated"} />
-      <MovieLayout title="Trending" type={"popular"} />
+      <Routes>
+        <Route element={<Main></Main>}>
+          <Route
+            path="/"
+            element={
+              <>
+                <Banner></Banner>
+                <HomePage></HomePage>
+              </>
+            }
+          ></Route>
+        </Route>
+      </Routes>
     </Fragment>
   );
 }
