@@ -1,8 +1,11 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Button from "./button/Button";
 
 //https://image.tmdb.org/t/p/original${item.poster_path}
 const MovieCard = ({ item }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="movie-card flex flex-col rounded-lg p-3 bg-slate-800 text-white h-auto select-none">
       <img
@@ -16,12 +19,12 @@ const MovieCard = ({ item }) => {
           <span>{new Date(item.release_date).getFullYear()}</span>
           <span>{item.vote_average}</span>
         </div>
-        <NavLink
-          to={`/movie/${item.id}`}
-          className="py-3 px-6 rounded-lg bg-primary capitalize w-full mt-auto"
+        <Button
+          bgColor="secondary"
+          onClick={() => navigate(`/movie/${item.id}`)}
         >
-          Watch Now
-        </NavLink>
+          Watch now
+        </Button>
       </div>
     </div>
   );

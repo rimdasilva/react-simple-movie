@@ -1,16 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "../config";
 import MovieCard from "../components/MovieCard";
+import useDebounce from "../hooks/useDebounce";
+import ReactPaginate from "react-paginate";
 
+const itemsPerPage = 20;
 const MoviePage = () => {
-  const { data } = useSWR(
-    `https://api.themoviedb.org/3/movie/popular?api_key=7a8d51511cc5e3deceece37dc4824e3f`,
-    fetcher
+  const [pageCount, setPageCount] = useState(0);
+  const [itemOffset, setItemOffset] = useState(0);
+  const [nextPage, setNextPage] = useState(1);
+  const [filter, setFilter] = useState("");
+  const filterDebounce = useDebounce(filter, 500);
+  const [url, setUrl] = useState(
+    `https://api.themoviedb.org/3/movie/popular?api_key=7a8d51511cc5e3deceece37dc4824e3f&page=${nextPage}`
   );
+
+  const { data, error } = useSWR(url, fetcher);
+  const loading = !data && !error;
+
+  useEffect(() => {
+    if (filterDebounce) {
+      setUrl(
+        `https://api.themoviedb.org/3/search/movie?api_key=7a8d51511cc5e3deceece37dc4824e3f&query=${filterDebounce}&page=${nextPage}`
+      );
+    } else {
+      setUrl(
+        `https://api.themoviedb.org/3/movie/popular?api_key=7a8d51511cc5e3deceece37dc4824e3f&page=${nextPage}`
+      );
+    }
+  }, [filterDebounce, nextPage]);
 
   const movies = data?.results || [];
 
+  console.log(data);
+
+  useEffect(() => {
+    if (!data || !data.total_results) return;
+    setPageCount(Math.ceil(data.total_results / itemsPerPage));
+  }, [data, itemOffset]);
+
+  const handleClick = (e) => {
+    const newOffset = (e.selected * itemsPerPage) % data.total_results;
+    setNextPage(e.selected + 1);
+    setItemOffset(newOffset);
+  };
+
+  const handleFilter = (e) => {
+    setFilter(e.target.value);
+  };
   return (
     <div className="py-10 page-container">
       <div className="flex mb-10">
@@ -19,6 +57,7 @@ const MoviePage = () => {
             type="text"
             className="w-full p-4 bg-slate-800 outline-none text-white"
             placeholder="Type here to search ..."
+            onChange={handleFilter}
           />
         </div>
         <button className="p-4 bg-primary text-white">
@@ -38,9 +77,26 @@ const MoviePage = () => {
           </svg>
         </button>
       </div>
+      {loading && (
+        <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent border-t-4 mx-auto animate-spin"></div>
+      )}
       <div className="grid grid-cols-4 gap-10">
-        {movies &&
+        {!loading &&
+          movies &&
           movies.map((item) => <MovieCard key={item.id} item={item} />)}
+      </div>
+
+      <div className="mt-10">
+        <ReactPaginate
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handleClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="< previous"
+          renderOnZeroPageCount={null}
+          className="pagination"
+        />
       </div>
     </div>
   );
