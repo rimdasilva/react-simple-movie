@@ -5,6 +5,8 @@ import "swiper/scss";
 import Main from "./components/layout/Main";
 import HomePage from "./pages/HomePage";
 import Banner from "./components/Banner";
+import MoviePage from "./pages/MoviePage";
+import MovieDetailPage from "./pages/MovieDetailPage";
 
 function App() {
   return (
@@ -15,11 +17,13 @@ function App() {
             path="/"
             element={
               <>
-                <Banner></Banner>
-                <HomePage></HomePage>
+                <Banner />
+                <HomePage />
               </>
             }
           ></Route>
+          <Route path="/movies" element={<MoviePage />}></Route>
+          <Route path="/movie/:movieId" element={<MovieDetailPage />}></Route>
         </Route>
       </Routes>
     </Fragment>

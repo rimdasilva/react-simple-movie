@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 //https://image.tmdb.org/t/p/original${item.poster_path}
 const MovieCard = ({ item }) => {
@@ -15,9 +16,12 @@ const MovieCard = ({ item }) => {
           <span>{new Date(item.release_date).getFullYear()}</span>
           <span>{item.vote_average}</span>
         </div>
-        <button className="py-3 px-6 rounded-lg bg-primary capitalize w-full mt-auto">
+        <NavLink
+          to={`/movie/${item.id}`}
+          className="py-3 px-6 rounded-lg bg-primary capitalize w-full mt-auto"
+        >
           Watch Now
-        </button>
+        </NavLink>
       </div>
     </div>
   );
