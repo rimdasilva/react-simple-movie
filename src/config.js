@@ -8,4 +8,6 @@ export const tmdbAPI = {
   getMovieVideos: (id) => `${tmdbEndpoint}/${id}/videos?api_key=${apiKey}`,
   getMovieSimilar: (id) => `${tmdbEndpoint}/${id}/similar?api_key=${apiKey}`,
   imageOriginal: (fileName) => `https://image.tmdb.org/t/p/original${fileName}`,
+
+  getMovieMeta: (id, type) => `${tmdbEndpoint}/${id}/${type}?api_key=${apiKey}`,
 };
