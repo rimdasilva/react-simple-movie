@@ -6,7 +6,7 @@ import Main from "./components/layout/Main";
 import Banner from "./components/Banner";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
-const MoviePage = lazy(() => import("./pages/MoviePage"));
+const MoviePage = lazy(() => import("./pages/MoviePageV2"));
 const MovieDetailPage = lazy(() => import("./pages/MovieDetailPage"));
 
 function App() {

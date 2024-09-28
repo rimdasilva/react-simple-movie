@@ -3,12 +3,12 @@ import useSWR from "swr";
 import { fetcher } from "../config";
 import MovieCard, { MovieCardSkeleton } from "../components/MovieCard";
 import useDebounce from "../hooks/useDebounce";
-import ReactPaginate from "react-paginate";
 import { v4 } from "uuid";
+import Button from "../components/button/Button";
+import useSWRInfinite from "swr/infinite";
 
 const itemsPerPage = 20;
-const pageCount = 500;
-const MoviePage = () => {
+const MoviePageV2 = () => {
   const [itemOffset, setItemOffset] = useState(0);
   const [nextPage, setNextPage] = useState(1);
   const [filter, setFilter] = useState("");
@@ -17,8 +17,12 @@ const MoviePage = () => {
     `https://api.themoviedb.org/3/movie/popular?api_key=7a8d51511cc5e3deceece37dc4824e3f&page=${nextPage}`
   );
 
-  const { data, error } = useSWR(url, fetcher);
+  const { data, error, size, setSize } = useSWRInfinite(
+    (index) => url.replace("page=1", `page=${index + 1}`),
+    fetcher
+  );
   const loading = !data && !error;
+  const movies = data?.results || [];
 
   useEffect(() => {
     if (filterDebounce) {
@@ -32,8 +36,6 @@ const MoviePage = () => {
     }
   }, [filterDebounce, nextPage]);
 
-  const movies = data?.results || [];
-
   console.log(data);
 
   useEffect(() => {
@@ -41,15 +43,10 @@ const MoviePage = () => {
     // setPageCount(Math.ceil(data.total_results / itemsPerPage));
   }, [data, itemOffset]);
 
-  const handleClick = (e) => {
-    const newOffset = (e.selected * itemsPerPage) % data.total_results;
-    setNextPage(e.selected + 1);
-    setItemOffset(newOffset);
-  };
-
   const handleFilter = (e) => {
     setFilter(e.target.value);
   };
+
   return (
     <div className="py-10 page-container">
       <div className="flex mb-10">
@@ -78,6 +75,7 @@ const MoviePage = () => {
           </svg>
         </button>
       </div>
+
       {loading && (
         <div className="grid grid-cols-4 gap-10">
           {new Array(itemsPerPage).fill(0).map(() => (
@@ -90,21 +88,11 @@ const MoviePage = () => {
           movies &&
           movies.map((item) => <MovieCard key={item.id} item={item} />)}
       </div>
-
-      <div className="mt-10">
-        <ReactPaginate
-          breakLabel="..."
-          nextLabel="next >"
-          onPageChange={handleClick}
-          pageRangeDisplayed={5}
-          pageCount={pageCount}
-          previousLabel="< previous"
-          renderOnZeroPageCount={null}
-          className="pagination"
-        />
+      <div className="mt-10 text-center">
+        <Button>Load more</Button>
       </div>
     </div>
   );
 };
 
-export default MoviePage;
+export default MoviePageV2;
